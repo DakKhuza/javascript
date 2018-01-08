@@ -56,6 +56,7 @@ function walk(){
 		}
 	}
 	alien.src = alienSrc + imageNumber + ".gif"
+	
 	if (alienImageWidth > boxX_0 && alienPosX < boxX_1) {
 		floorPos = boxH
 	}else {
@@ -113,7 +114,7 @@ function init(){
 				jumpTimer = window.setInterval(jump,1)
 			}
 			if (fallTimer == null) {
-				window.setInterval(fall,1)
+				fallTimer = window.setInterval(fall,1)
 			}
 		}
 	}
