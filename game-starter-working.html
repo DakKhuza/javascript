@@ -7,7 +7,7 @@ var timer = null
 var imageNumber = 0
 var alien = null
 var alienDir = 0
-var isAnim = true
+var isAnim = false
 var alienSrc = "images/alien/alienrwalk"
 
 //Jump
@@ -26,34 +26,56 @@ var boxId = null
 var boxX_0 = 0
 var boxX_1 = 0
 var boxH = 0
+var alienMove = false
 
 function walk(){
-
+	//console.log("Alien Move: "+alienMove+" IsAnim: "+isAnim+" Alien Dir: "+alienDir)
+	
 	alien = document.getElementById("x")
 	alienPosX = parseInt(alien.style.left)
 	alienImageWidth = alienPosX+parseInt(alien.width)
 	alienPosY = parseInt(alien.style.top)
 	alienBottomY = alienPosY+parseInt(alien.height)
-	console.log("Alien X "+alienPosX+" box x "+boxX_1)
-	if (alienPosX < window.innerWidth-100 && alienDir == 0 && (alienImageWidth+1 != boxX_0 || alienBottomY < boxH)) {
-		alien.style.left = alienPosX + 1 + "px"
-	}else {
-		alien.style.left = alienPosX - 1 + "px"
-		if (alienPosX > 0 && (alienPosX != boxX_1 || alienBottomY < boxH)) {
-			alienDir = 1
-			alienSrc = "images/alien/alienlwalk"
-		}
-		else {
-			alienDir = 0
-			alienSrc = "images/alien/alienrwalk"
+
+	if (alienDir == 0) {
+		if (alienPosX < window.innerWidth-100 && (alienImageWidth+1 != boxX_0 || alienBottomY < boxH)) {
+			if (alienMove == true) {
+				alien.style.left = alienPosX + 1 + "px"
+			}
+		}else {
+			if (alienMove == true) {
+				isAnim = false
+			}
 		}
 	}
+	
+	if (alienDir == 1) {
+		if ((alienPosX != boxX_1 || alienBottomY < boxH) && alienPosX > 0) {
+			if (alienMove == true) {
+				alien.style.left = alienPosX - 1 + "px"
+			}
+		}else {
+			if (alienMove == true) {
+				isAnim = false
+			}
+		}
+	}
+	
+	if (alienDir == 1) {
+		alienSrc = "images/alien/alienlwalk"
+	}
+	else {
+		alienSrc = "images/alien/alienrwalk"
+	}
+	
 	if (isAnim == true) {
 		if(imageNumber < 30){
 			imageNumber++
 		}else{
 			imageNumber = 0
 		}
+	}else {
+		imageNumber = 7
 	}
 	alien.src = alienSrc + imageNumber + ".gif"
 	
@@ -61,6 +83,11 @@ function walk(){
 		floorPos = boxH
 	}else {
 		floorPos = floorDefault
+	}
+	if (alienMove == true && alienBottomY == floorPos) {
+		isAnim = true
+	}else {
+		isAnim = false
 	}
 }
 
@@ -80,8 +107,12 @@ function fall() {
 		if (alienBottomY < floorPos) {
 			alien.style.top = parseInt(alien.style.top)+1+"px"
 		}else {
-			isAnim = true
-			alienBottomY = floorPos
+			if (floorPos == floorDefault) {
+				alien.style.top = floorPos-alien.height+"px"
+			}else {
+				alien.style.top = floorPos-alien.height+"px"
+				jump()
+			}
 		}
 	}
 }
@@ -91,7 +122,9 @@ function init(){
 	//Get Alien Id
 	alien = document.getElementById("x")
 	//Get button Id's
-	buttonJump = document.getElementById("b-j")
+	buttonJump  = document.getElementById("b-j")
+	buttonRight = document.getElementById("b-r")
+	buttonLeft  = document.getElementById("b-l")
 	
 	
 	//Get box values
@@ -103,11 +136,26 @@ function init(){
 	floorPos = parseInt(alien.style.top)+parseInt(alien.width)
 	floorDefault = floorPos
 	
+	buttonRight.onmouseover=function() {
+		alienDir = 0
+		alienMove = true
+	}
 	
+	buttonLeft.onmouseover=function() {
+		alienDir = 1
+		alienMove = true
+	}
+	
+	buttonRight.onmouseout=function() {
+		alienMove = false
+	}
+	
+	buttonLeft.onmouseout=function() {
+		alienMove = false
+	}
 	
 	buttonJump.onclick=function() {
 		if (isJump == false && alienBottomY == floorPos) {
-			isAnim = false
 			jumpTime = 0
 			isJump = true
 			if (jumpTimer == null) {
