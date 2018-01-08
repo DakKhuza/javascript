@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+var timer = null
+
+function move() {
+	document.getElementById("x").style.left = parseInt(document.getElementById("x").style.left)+1
+}
+
+function onInit() {
+	document.getElementById("x").onmouseover=function() {
+		timer = window.setInterval(move, 10)
+	}
+	document.getElementById("x").onmouseout=function() {
+		window.clearInterval(timer)
+	}
+}
+
+window.onload=onInit()
+
+</script>
+
+</head>
+	<body>
+		<img src="cat.jpg">
+	</body>
+</html>

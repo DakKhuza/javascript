@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+//Image
+var timer = null
+var imageNumber = 0
+var alien = null
+var alienDir = 0
+var isAnim = true
+var alienSrc = "images/alien/alienrwalk"
+
+//Jump
+var isJump = false
+var jumpTimeMax = 200
+var jumpTime = 0
+var jumpTimer = null
+var jumpDir = 0
+
+//Col
+var floorPos = 0
+var boxId = null
+var boxX_0 = 0
+var boxX_1 = 0
+var boxH = 0
+
+function walk(){
+
+	alien = document.getElementById("x")
+	alienPosX = parseInt(alien.style.left)
+	alienImageWidth = alienPosX+parseInt(alien.width)
+	alienPosY = parseInt(alien.style.top)
+	alienBottomY = alienPosY+parseInt(alien.height)
+
+	if (alienPosX < window.innerWidth-100 && alienDir == 0 && (alienImageWidth+1 != boxX_0 || alienPosY < boxH)) {
+		alien.style.left = alienPosX + 1 + "px"
+	}else {
+		alien.style.left = alienPosX - 1 + "px"
+		if (alienPosX > 0 && (alienPosX != boxX_1 || alienPosY != boxH)) {
+			alienDir = 1
+			alienSrc = "images/alien/alienlwalk"
+		}
+		else {
+			alienDir = 0
+			alienSrc = "images/alien/alienrwalk"
+		}
+	}
+	if (isAnim == true) {
+		if(imageNumber < 30){
+			imageNumber++
+		}else{
+			imageNumber = 0
+		}
+	}
+	alien.src = alienSrc + imageNumber + ".gif"
+}
+
+function jump() {
+	isJump = true
+	console.log(jumpTime)
+	if (jumpTime < jumpTimeMax && jumpDir == 0) {
+		jumpTime++;
+		alien.style.top = parseInt(alien.style.top)-1+"px"
+	}else {
+		jumpDir = 1
+		if (jumpTime > 0) { //&& alienBottomY < boxH
+			if (alienImageWidth > boxX_0 && alienPosX < boxX_1) {
+				if (alienBottomY < boxH) {
+					alien.style.top = parseInt(alien.style.top)+1+"px"
+					jumpTime--
+					isAnim = false
+				}else {
+					isAnim = true
+				}
+			}else {
+				alien.style.top = parseInt(alien.style.top)+1+"px"
+				jumpTime--
+				isAnim = false
+			}
+		}
+		else {
+			isJump = false
+			window.clearInterval(jumpTimer)
+			jumpTimer = null
+			isAnim = true
+		}
+	}
+}
+
+
+
+function init(){
+	alien = document.getElementById("x")
+	button = document.getElementById("b")
+	boxId = document.getElementById("box")
+	boxX_0 = parseInt(boxId.style.left)
+	boxX_1 = boxX_0+parseInt(boxId.width)
+	boxH = parseInt(boxId.style.top)
+	console.log("Box Left: "+boxX_0+" Box Right: "+boxX_1+" Box Top: "+boxH)
+	button.onclick=function() {
+		if (isJump == false) {
+			isAnim = false
+			jumpDir = 0
+			jumpTimer = window.setInterval(jump, 1)
+		}
+	}
+	
+	if(timer == null){
+		timer = window.setInterval(walk, 20)
+	}else{
+		window.clearInterval(timer)
+		timer = null
+	}
+}
+
+window.onload=init
+
+</script>
+</head>
+<body>
+<img src="images/box.png" id = "box" width="100" height="100" style="position:absolute; top:200px; left:400px">
+<img src="images/alien/alienrwalk0.gif" id="x" style="position:absolute; top:200px; left:12px">
+<img src="images/button.png" id = "b" width = "100" height = "100">
+</body>
+</html>
