@@ -18,6 +18,7 @@ var jumpTimer = null
 var fallTimer = null
 var jumpDir = 0
 var jumpFall = false
+var shrinkTimer = 0
 
 //Col
 var floorPos = 0
@@ -114,8 +115,12 @@ function fall() {
 			}else {
 				alien.style.top = floorPos-alien.height+"px"
 				startJump()
-				
-				boxShrink()
+				if (shrinkTimer == 0) {
+					shrinkTimer = 10
+					boxShrink()
+				}else {
+					shrinkTimer--
+				}
 			}
 		}
 	}
@@ -135,7 +140,7 @@ function startJump() {
 }
 
 function boxShrink() {
-	boxId.style.height = (parseInt(boxId.height)/2)+"px"
+	boxId.style.height = (parseInt(boxId.height)-10)+"px"
 }
 
 function init(){
