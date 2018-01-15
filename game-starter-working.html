@@ -19,6 +19,9 @@ var fallTimer = null
 var jumpDir = 0
 var jumpFall = false
 var shrinkTimer = 0
+var jumpSpd_cur = 0
+const jumpSpd_max = 5
+const gravity = 0.05
 
 //Col
 var floorPos = 0
@@ -95,20 +98,29 @@ function walk(){
 
 
 function jump() {
-	if (jumpTime < jumpTimeMax) {
-		jumpTime++;
-		alien.style.top = parseInt(alien.style.top)-1+"px"
+	if (Math.floor(jumpSpd_cur) > 0) {
+		//jumpTime++;
+		jumpSpd_cur -= gravity
+		alien.style.top = parseInt(alien.style.top)-jumpSpd_cur+"px"
 	}else {
 		isJump = false
 		window.clearInterval(jumpTimer)
 		jumpTimer = null
 	}
+	console.log("Called Jump")
 }
 
 function fall() {
 	if (isJump == false) {
 		if (alienBottomY < floorPos) {
-			alien.style.top = parseInt(alien.style.top)+1+"px"
+			if (jumpSpd_cur < jumpSpd_max) {
+				jumpSpd_cur += gravity
+			}
+			if ((parseInt(alien.style.top)+jumpSpd_cur) > floorPos) {
+				alien.style.top = floorPos-alien.height+"px"
+			}else {
+				alien.style.top = parseInt(alien.style.top)+jumpSpd_cur+"px"
+			}
 		}else {
 			if (floorPos == floorDefault) {
 				alien.style.top = floorPos-alien.height+"px"
@@ -129,7 +141,8 @@ function fall() {
 
 function startJump() {
 	if (isJump == false && alienBottomY == floorPos) {
-		jumpTime = 0
+		//jumpTime = 0
+		jumpSpd_cur = jumpSpd_max
 		isJump = true
 		if (jumpTimer == null) {
 			jumpTimer = window.setInterval(jump,1)
@@ -138,6 +151,7 @@ function startJump() {
 			fallTimer = window.setInterval(fall,1)
 		}
 	}
+	console.log("Started Jump")
 }
 
 
@@ -211,11 +225,11 @@ window.onload=init
 </head>
 <body>
 <img src="images/box.png" id = "box" width="100" height="100" 
-	style="position:absolute; top:250px; 
+	style="position:absolute; top:200px; 
 	left:150px;border-color:black; border: solid; border-width:1px;">
 <img src="images/alien/alienrwalk0.gif" id="x" style="position:absolute; top:200px; left:12px; border-color:black; border: solid; border-width:1px;">
-<img src="images/button-left.png" id = "b-l" width = "100" height = "100">
-<img src="images/button-jump.png" id = "b-j" width = "100" height = "100">
-<img src="images/button-right.png" id = "b-r" width = "100" height = "100">
+<img src="images/button-left.png" id = "b-l" width = "100" height = "100" style = "position:absolute; top:500px; left:0px">
+<img src="images/button-jump.png" id = "b-j" width = "100" height = "100" style = "position:absolute; top:500px; left:200px">
+<img src="images/button-right.png"id = "b-r" width = "100" height = "100" style = "position:absolute; top:500px; left:400px">
 </body>
 </html>
