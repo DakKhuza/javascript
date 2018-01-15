@@ -12,16 +12,21 @@ var alienSrc = "images/alien/alienrwalk"
 
 //Jump
 var isJump = false
-var jumpTimeMax = 200
-var jumpTime = 0
 var jumpTimer = null
 var fallTimer = null
 var jumpDir = 0
 var jumpFall = false
-var shrinkTimer = 0
 var jumpSpd_cur = 0
-const jumpSpd_max = 5
+const jumpSpd_max = 6
 const gravity = 0.05
+
+
+//Alien Values
+const alienSpd = 1
+const alienWalk_speed = 5
+
+//Timer Values
+var shrinkTimer = 0
 
 //Col
 var floorPos = 0
@@ -42,25 +47,31 @@ function walk(){
 	alienBottomY = alienPosY+parseInt(alien.height)
 
 	if (alienDir == 0) {
-		if (alienPosX < window.innerWidth-100 && (alienImageWidth+1 != boxX_0 || alienBottomY <= boxH)) {
+		if (alienPosX < window.innerWidth-100 && (!(alienImageWidth+alienSpd > boxX_0 && alienPosX+alienSpd < boxX_1) || alienBottomY <= boxH)) {
 			if (alienMove == true) {
-				alien.style.left = alienPosX + 1 + "px"
+				alien.style.left = alienPosX + alienSpd + "px"
 			}
 		}else {
 			if (alienMove == true) {
 				isAnim = false
+				if (alienImageWidth+alienSpd > boxX_0) {
+					alien.style.left = (boxX_0-parseInt(boxId.style.width))+"px"
+				}
 			}
 		}
 	}
 	
 	if (alienDir == 1) {
-		if ((alienPosX != boxX_1 || alienBottomY <= boxH) && alienPosX > 0) {
+		if ((!(alienImageWidth-alienSpd > boxX_0 && alienPosX-alienSpd < boxX_1) || alienBottomY <= boxH) && alienPosX > 0) {
 			if (alienMove == true) {
-				alien.style.left = alienPosX - 1 + "px"
+				alien.style.left = alienPosX - alienSpd + "px"
 			}
 		}else {
 			if (alienMove == true) {
 				isAnim = false
+				if (alienImageWidth-alienSpd > boxX_0) {
+					alien.style.left = (boxX_1)+"px"
+				}
 			}
 		}
 	}
@@ -74,14 +85,20 @@ function walk(){
 	
 	if (isAnim == true) {
 		if(imageNumber < 30){
-			imageNumber++
+			imageNumber+= alienWalk_speed/30
 		}else{
 			imageNumber = 0
 		}
 	}else {
 		imageNumber = 7
 	}
-	alien.src = alienSrc + imageNumber + ".gif"
+	imageNumber_compiled = Math.floor(imageNumber)
+	
+	if (imageNumber_compiled > 30) {
+		imageNumber_compiled = 30
+	}
+	
+	alien.src = alienSrc + imageNumber_compiled + ".gif"
 	
 	if (alienImageWidth > boxX_0 && alienPosX < boxX_1) {
 		floorPos = boxH
@@ -113,7 +130,7 @@ function jump() {
 function fall() {
 	if (isJump == false) {
 		if (alienBottomY < floorPos) {
-			if (jumpSpd_cur < jumpSpd_max) {
+			if (jumpSpd_cur < jumpSpd_max*1.5) {
 				jumpSpd_cur += gravity
 			}
 			if ((parseInt(alien.style.top)+jumpSpd_cur) > floorPos) {
@@ -212,7 +229,7 @@ function init(){
 	}
 	
 	if(timer == null){
-		timer = window.setInterval(walk, 20)
+		timer = window.setInterval(walk, alienWalk_speed)
 	}else{
 		window.clearInterval(timer)
 		timer = null
