@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function copyText() {
+	document.getElementById('para').innerHTML = this.value;
+}
+
+onload=function() {
+	var head = document.createElement('h1');
+	var textHead = document.createTextNode('Welcome class');
+	head.appendChild(textHead);
+	document.body.appendChild(head);
+	
+	var myimg = document.createElement('img');
+	myimg.src = 'images/dog.jpg';
+	document.body.appendChild(myimg);
+	
+	document.body.appendChild(document.createElement('hr'));
+	
+	var myTextBox = document.createElement('input');
+	myTextBox.type = 'text';
+	document.body.appendChild(myTextBox);
+	myTextBox.focus();
+	
+	
+	myTextBox.onkeyup=copyText;
+	
+	var myPara = document.createElement('p');
+	myPara.id = 'para';
+	document.body.appendChild(myPara);
+	
+}
+
+</script>
+</head>
+<body></body>
+</html>

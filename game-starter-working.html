@@ -17,13 +17,13 @@ var fallTimer = null
 var jumpDir = 0
 var jumpFall = false
 var jumpSpd_cur = 0
-const jumpSpd_max = 6
+const jumpSpd_max = 3
 const gravity = 0.05
 
 
 //Alien Values
 const alienSpd = 1
-const alienWalk_speed = 5
+const alienWalk_speed = 20
 
 //Timer Values
 var shrinkTimer = 0
@@ -187,10 +187,14 @@ function boxShrink() {
 		console.log("BoxH Updated")
 	}else {
 		boxH = floorDefault
+		if (parseInt(boxId.height) <= 10) {
+			boxId.style.visibility = "hidden"
+			console.log("Hid Box")
+		}
 	}
 	console.log("Box shrink called")
 	console.log("Box Floor: "+parseInt(boxId.style.top)+" Floor H: "+floorDefault)
-	console.log("BoxH: "+boxH)
+	console.log("Box Height: "+parseInt(boxId.height))
 }
 
 

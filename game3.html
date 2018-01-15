@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+function copyText() {
+	var myPar = document.getElementById('para')
+	
+	if(myPar.childNodes.length == 0){
+		myPar.appendChild(document.createTextNode(this.value))
+	}else{
+		// there are already child nodes
+		// let's find out what KIND
+		for(let i = 0; i < myPar.childNodes.length; i++){
+			if(myPar.childNodes[i].nodeType == 3){
+				// 3 means text node
+				myPar.childNodes[i].nodeValue  = this.value
+				return // only replace FIRST text node
+			}
+		}
+		// didn't return? that means didn't find TEXT nodes
+		// create one 
+		myPar.appendChild(document.createTextNode(this.value))
+	}
+}
+
+onload=function() {
+	var head = document.createElement('h1');
+	var textHead = document.createTextNode('Welcome class');
+	head.appendChild(textHead);
+	document.body.appendChild(head);
+	
+	var myimg = document.createElement('img');
+	myimg.src = 'images/dog.jpg';
+	document.body.appendChild(myimg);
+	
+	document.body.appendChild(document.createElement('hr'));
+	
+	var myTextBox = document.createElement('input');
+	myTextBox.type = 'text';
+	document.body.appendChild(myTextBox);
+	myTextBox.focus();
+	
+	
+	myTextBox.onkeyup=copyText;
+	
+	var myPara = document.createElement('p');
+	myPara.id = 'para';
+	
+	document.body.appendChild(myPara);
+	
+}
+
+</script>
+</head>
+<body></body>
+</html>
