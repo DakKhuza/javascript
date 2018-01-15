@@ -55,7 +55,9 @@ function walk(){
 			if (alienMove == true) {
 				isAnim = false
 				if (alienImageWidth+alienSpd > boxX_0) {
-					alien.style.left = (boxX_0-parseInt(boxId.style.width))+"px"
+					if (isJump == false && alienBottomY < boxH) {
+						alien.style.left = (boxX_0-parseInt(boxId.style.width))+"px"
+					}
 				}
 			}
 		}
@@ -70,7 +72,9 @@ function walk(){
 			if (alienMove == true) {
 				isAnim = false
 				if (alienImageWidth-alienSpd > boxX_0) {
-					alien.style.left = (boxX_1)+"px"
+					if (isJump == false && alienBottomY < boxH) {
+						alien.style.left = (boxX_1)+"px"
+					}
 				}
 			}
 		}
@@ -180,11 +184,13 @@ function boxShrink() {
 	
 	if (parseInt(boxId.style.top) < floorDefault) {
 		boxH = parseInt(boxId.style.top)
+		console.log("BoxH Updated")
 	}else {
 		boxH = floorDefault
 	}
 	console.log("Box shrink called")
 	console.log("Box Floor: "+parseInt(boxId.style.top)+" Floor H: "+floorDefault)
+	console.log("BoxH: "+boxH)
 }
 
 
