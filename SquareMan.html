@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			pre {
+					margin: 0;
+					font-family: "Courier New", Courier, monospace;
+				}
+			div {
+					width: 960px;
+					margin: auto;
+				}
+		</style>
+	
+	
+		<script>
+			var level = 
+			[
+			"╔════════════╗╔════════════╗",//0
+			"║************║║************║",//1
+			"║*╔══╗*╔═══╗*║║*╔═══╗*╔══╗*║",//2
+			"║*║  ║*║   ║*║║*║   ║*║  ║*║",//3
+			"║*╚══╝*╚═══╝*╚╝*╚═══╝*╚══╝*║",//4
+			"║**************************║",//5
+			"║*╔══╗*╔╗*╔══════╗ ╔╗*╔══╗*║",//6
+			"║*╚══╝*║║*╚══╗╔══╝ ║║*╚══╝*║",//7
+			"║******║║****║║****║║******║",//8
+			"╚════╗*║╚══╗ ║║ ╔══╝║*╔════╝",//9
+			"     ║*║╔══╝ ╚╝ ╚══╗║*║     ",//10
+			"     ║*║║          ║║*║     ",//11
+			"     ║*║║ ╔═----═╗ ║║*║     ",//12
+			"═════╝*╚╝ ║      ║ ╚╝*╚═════",//13
+			"□     *   ║      ║   *     □",//14
+			"═════╗*╔╗ ║      ║ ╔╗*╔═════",//15
+			"     ║*║║ ╚══════╝ ║║*║     ",//16
+			"     ║*║║          ║║*║     ",//17
+			"     ║*║║ ╔══════╗ ║║*║     ",//18
+			"╔════╝*╚╝ ╚══╗╔══╝ ╚╝*╚════╗",//19
+			"║************║║************║",//20
+			"║*╔══╗*╔═══╗*║║*╔═══╗*╔══╗*║",//21
+			"║*╚═╗║*╚═══╝*╚╝*╚═══╝*║╔═╝*║",//22
+			"║* *║║****************║║***║",//23
+			"╚═╗*║║*╔╗*╔══════╗*╔╗*║║*╔═╝",//24
+			"╔═╝*╚╝*║║*╚══╗╔══╝*║║*╚╝*╚═╗",//25
+			"║******║║****║║****║║******║",//26
+			"║*╔════╝╚══╗*║║*╔══╝╚════╗*║",//27
+			"║*╚════════╝*╚╝*╚════════╝*║",//28
+			"║**************************║",//29
+			"╚══════════════════════════╝"
+			]
+			var playerY = 2
+			var playerX = 6
+			var score = 0
+			var gameOver = false;
+
+			function replaceStringAtPoint(str,point,strReplace) {
+				var str0,str1,returnString
+				if (strReplace != null) {
+					str0 = str.slice(0,point)
+					str1 = str.slice(point+1,str.length)
+					returnString = str0+strReplace+str1
+					return returnString
+				}else {
+					return str
+				}
+			}
+			function colCheck(stringCheck) {
+				switch (stringCheck) {
+					
+					case "*":
+					return true;
+					
+					case " ":
+					return true;
+					
+					case "□":
+					return true
+					
+					default:
+						return false;
+					break;
+					
+				}
+			}
+			
+			function colCheck_actions() {
+				switch(level[playerY].charAt(playerX)) {
+					case "*":
+						level[playerY] = replaceStringAtPoint(level[playerY],playerX," ")
+						score++;
+						updateString("Score: "+score,document.getElementById('score'))
+					break;
+					
+					case "□":
+						if (playerX == 0) {
+							playerX = level[playerY].length-2
+						}else {
+							playerX = 1
+						}
+					break;
+					
+					case " ":
+					break;
+					
+					default:
+						gameOver = true
+					break;
+				}
+			}
+			
+			function triangleAI() {
+				
+			}
+			
+			function diamonAI() {
+				
+			}
+			
+			function squareAI() {
+				
+			}
+			
+			function move(e) {
+				if (gameOver == false) {
+					keyCode = null
+					console.log("Key event")
+					if(e.which){
+						keyCode = e.which
+					}else if(e.event){
+						keyCode = e.event
+					}
+					
+					var keyUp = 38, keyDown = 40, keyLeft = 37, keyRight = 39
+					
+					switch (keyCode) {
+						
+						case keyUp:
+							if (colCheck(level[playerY-1].charAt(playerX))) {
+								if (playerY > 0) {
+									updateString(replaceStringAtPoint(level[playerY],playerX,null))
+									playerY--
+								}
+							}
+						break;
+						
+						case keyDown:
+							if (colCheck(level[playerY+1].charAt(playerX))) {
+								if (playerY < level.length) {
+									updateString(replaceStringAtPoint(level[playerY],playerX,null))
+									playerY++
+								}
+							}
+						break;
+						
+						case keyLeft:
+							if (colCheck(level[playerY].charAt(playerX-1))) {
+								if (playerX > 0) {
+									playerX--
+								}
+							}
+						break;
+						
+						case keyRight:
+							if (colCheck(level[playerY].charAt(playerX+1))) {
+								if (playerX < level[0].length) {
+									playerX++
+								}
+							}
+						break;
+						default:
+							console.log("No match")
+						break
+					}
+				}
+			}
+			
+			
+			function mainLoop() {
+				if (gameOver == false) {
+					var replaceString = replaceStringAtPoint(level[playerY],playerX,"■")
+					updateString(replaceString)
+					colCheck_actions()
+				}else {
+					updateString("GAME OVER",document.getElementById('score'))
+				}
+			}
+			
+			
+			
+			function updateString(str,updateElement) {
+				//console.log("Update string")
+				if (updateElement == null) {
+					var actStr = document.getElementById('uuid-'+playerY)
+				}else {
+					actStr = updateElement
+				}
+				
+				for(let i = 0; i < actStr.childNodes.length; i++){
+					if(actStr.childNodes[i].nodeType == 3){
+						// 3 means text node
+						actStr.childNodes[i].nodeValue  = str
+						return // only replace FIRST text node
+					}
+				}
+			}
+			
+			
+			
+			
+			
+			function init() {
+				var main = document.createElement('div')
+				var sub = document.createElement('div')
+				
+				var scoreClock = document.createElement('p')
+				scoreClock.id = 'score'
+				var scoreText = document.createTextNode('Score: '+score)
+				
+				scoreClock.appendChild(scoreText)
+				sub.appendChild(scoreClock)
+				
+				for(i=0;i<level.length;i++) {
+					var head = document.createElement('pre');
+					var textHead = document.createTextNode(level[i]);
+					head.appendChild(textHead);
+					head.id = "uuid-"+i
+					main.appendChild(head);
+					document.body.appendChild(main);
+				}
+				
+				document.body.appendChild(sub)
+				setInterval(mainLoop,1)
+			}
+			onload=init
+			onkeydown=move
+		</script>
+	</head>
+	
+	<body>
+	</body>
+</html>
