@@ -50,6 +50,12 @@
 			]
 			var playerY = 11
 			var playerX = 13
+			var playerDir = 0
+			
+			var triX = 0
+			var triY = 0
+			
+			
 			var score = 0
 			var gameOver = false;
 
@@ -135,37 +141,19 @@
 					switch (keyCode) {
 						
 						case keyUp:
-							if (colCheck(level[playerY-1].charAt(playerX))) {
-								if (playerY > 0) {
-									updateString(replaceStringAtPoint(level[playerY],playerX,null))
-									playerY--
-								}
-							}
+							playerDir = 0
 						break;
 						
 						case keyDown:
-							if (colCheck(level[playerY+1].charAt(playerX))) {
-								if (playerY < level.length) {
-									updateString(replaceStringAtPoint(level[playerY],playerX,null))
-									playerY++
-								}
-							}
+							playerDir = 1
 						break;
 						
 						case keyLeft:
-							if (colCheck(level[playerY].charAt(playerX-1))) {
-								if (playerX > 0) {
-									playerX--
-								}
-							}
+							playerDir = 2
 						break;
 						
 						case keyRight:
-							if (colCheck(level[playerY].charAt(playerX+1))) {
-								if (playerX < level[0].length) {
-									playerX++
-								}
-							}
+							playerDir = 3
 						break;
 						default:
 							console.log("No match")
@@ -176,6 +164,7 @@
 			
 			
 			function mainLoop() {
+				playerMove()
 				if (gameOver == false) {
 					var replaceString = replaceStringAtPoint(level[playerY],playerX,"■")
 					updateString(replaceString)
@@ -185,6 +174,48 @@
 				}
 			}
 			
+			
+			function playerMove() {
+				switch (playerDir) {
+					
+					case 0:
+						if (colCheck(level[playerY-1].charAt(playerX))) {
+							if (playerY > 0) {
+								updateString(replaceStringAtPoint(level[playerY],playerX,null))
+								playerY--
+							}
+						}
+					break;
+					
+					case 1:
+						if (colCheck(level[playerY+1].charAt(playerX))) {
+							if (playerY < level.length) {
+								updateString(replaceStringAtPoint(level[playerY],playerX,null))
+								playerY++
+							}
+						}
+					break;
+					
+					case 2:
+						if (colCheck(level[playerY].charAt(playerX-1))) {
+							if (playerX > 0) {
+								playerX--
+							}
+						}
+					break;
+					
+					case 3:
+						if (colCheck(level[playerY].charAt(playerX+1))) {
+							if (playerX < level[0].length) {
+								playerX++
+							}
+						}
+					break;
+					default:
+						console.log("No match")
+					break
+				}
+			}
 			
 			function updateString(str,updateElement) {
 				//console.log("Update string")
@@ -202,7 +233,6 @@
 					}
 				}
 			}
-			
 			
 			function init() {
 				var main = document.createElement('div')
@@ -225,7 +255,7 @@
 				}
 				
 				document.body.appendChild(sub)
-				setInterval(mainLoop,1)
+				setInterval(mainLoop,220)
 			}
 			onload=init
 			onkeydown=move
