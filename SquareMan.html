@@ -44,12 +44,21 @@
 			"║**************************║",//29
 			"╚══════════════════════════╝" //30
 			]
-			var playerY = 11
 			var playerX = 13
+			var playerY = 11
 			var playerDir = 1
 			
 			var triX = 12
 			var triY = 20
+			var triLastDir = null
+			
+			var diaX = 12
+			var diaY = 20
+			var diaLastDir = null
+			
+			var sphX = 12
+			var sphY = 20
+			var sphLastDir = null
 			
 			
 			var score = 0
@@ -116,19 +125,19 @@
 			function ai_getPossibleDir(ai_curX,ai_curY) {
 				possibleDirs = '0,0,0,0'
 				if (ai_checkPosFree(ai_curX-1,ai_curY)) {
-					replaceStringAtPoint(possibleDirs,0,'1')
+					possibleDirs = replaceStringAtPoint(possibleDirs,0,'1')
 				}
 				
 				if (ai_checkPosFree(ai_curX+1,ai_curY)) {
-					replaceStringAtPoint(possibleDirs,2,'1')
+					possibleDirs = replaceStringAtPoint(possibleDirs,2,'1')
 				}
 				
 				if (ai_checkPosFree(ai_curX,ai_curY-1)) {
-					replaceStringAtPoint(possibleDirs,4,'1')
+					possibleDirs = replaceStringAtPoint(possibleDirs,4,'1')
 				}
 				
 				if (ai_checkPosFree(ai_curX,ai_curY+1)) {
-					replaceStringAtPoint(possibleDirs,6,'1')
+					possibleDirs = replaceStringAtPoint(possibleDirs,6,'1')
 				}
 				return possibleDirs
 			}
@@ -141,23 +150,141 @@
 					return true;
 					case " ":
 					return true;
+					case '□':
+					return true;
+					case '▲':
+					return true;
+					case '◊':
+					return true;
+					case '●':
+					return true;
 					default:
 					return false;
 				}
 			}
 			
-			function triangleAI() {
+			function ai_noReverseDir(ai_lastDir,ai_curDir) {
+				if (ai_lastDir != null) {
+					switch (ai_lastDir) {
+						case 0: // left
+							if (ai_curDir == 1) {
+								return false 
+							}else {
+								return true
+							}
+						break;
+
+						case 1: //right
+							if (ai_curDir == 0) {
+								return false 
+							}else {
+								return true
+							}
+						break;
+						
+						case 2: //up
+							if (ai_curDir == 3) {
+								return false 
+							}else {
+								return true
+							}
+						break;
+						
+						case 3: //down
+							if (ai_curDir == 2) {
+								return false 
+							}else {
+								return true
+							}
+						break;
+					}
+				}else {
+					return true
+				}
+			}
+			
+			function ai(ai_x,ai_y,ai_lastDir,ai_char) {
 				
-				replaceString = replaceStringAtPoint(getStringContentOfLevelRow(triY),triX,"▲")
-				updateString(replaceString,document.getElementById('uuid-'+triY))
+				if (ai_x == playerX && ai_y == playerY) {
+					gameOver = true
+					console.log('GAME OVER!!!'+gameOver)
+				}
+				var ai_possibleDirArray = ''
+				ai_dirMove = null;
+				if (level[ai_y].charAt(ai_x) == '□') {
+					if (ai_x == 0) {
+						ai_x = level[ai_y].length-2
+					}else {
+						ai_x = 1
+					}
+				}
+				replaceString = replaceStringAtPoint(getStringContentOfLevelRow(ai_y),ai_x,ai_char)
+				updateString(replaceString,document.getElementById('uuid-'+ai_y))
+				ai_possibleDirArray = ai_getPossibleDir(ai_x,ai_y)
+				ai_possibleDirArray = ai_possibleDirArray.split(',')
+
+				while (ai_dirMove == null) {
+					ai_dirPossibleMove = Math.random()
+					ai_dirPossibleMove = Math.floor(ai_dirPossibleMove*6)
+					if (ai_dirPossibleMove > 3) {
+						ai_dirPossibleMove = 3
+					}
+					if (ai_possibleDirArray[ai_dirPossibleMove] == 1) {
+						
+						if (ai_noReverseDir(ai_lastDir,ai_dirPossibleMove)) {
+							ai_dirMove = ai_dirPossibleMove
+						}
+						
+					}
+					//console.log(ai_dirPossibleMove)
+				}
+				
+				switch (ai_dirMove) {
+					case 0:
+						ai_x--
+					break;
+					case 1:
+						ai_x++
+					break;
+					case 2:
+						ai_y--
+					break;
+					case 3:
+						ai_y++
+					break;
+				}
+				var newXYDIR = [0,0,0]
+				newXYDIR[0] = ai_x
+				newXYDIR[1] = ai_y
+				newXYDIR[2] = ai_dirMove
+				//console.log(ai_x+' '+ai_y+' '+ai_dirMove)
+
+				
+				return newXYDIR
+			}
+			
+			function triangleAI() {
+				var newXYDIR
+				newXYDIR = ai(triX,triY,triLastDir,"▲")
+				triX = newXYDIR[0]
+				triY = newXYDIR[1]
+				triLastDir = newXYDIR[2]
 			}
 			
 			function diamonAI() {
-				
+				var newXYDIR
+				newXYDIR = ai(diaX,diaY,diaLastDir,"◊")
+				diaX = newXYDIR[0]
+				diaY = newXYDIR[1]
+				diaLastDir = newXYDIR[2]
 			}
 			
-			function squareAI() {
-				
+			function sphereAI() {
+				var newXYDIR
+				newXYDIR = ai(sphX,sphY,sphLastDir,"●")
+				sphX = newXYDIR[0]
+				sphY = newXYDIR[1]
+				sphLastDir = newXYDIR[2]
 			}
 			
 			function getStringContentOfLevelRow(row) {
@@ -174,7 +301,7 @@
 			function move(e) {
 				if (gameOver == false) {
 					keyCode = null
-					console.log("Key event")
+					//console.log("Key event")
 					if(e.which){
 						keyCode = e.which
 					}else if(e.event){
@@ -209,9 +336,13 @@
 			
 			
 			function mainLoop() {
-				cleanLevel()
-				triangleAI()
-				playerMove()
+				if (gameOver == false) {
+					cleanLevel()
+					triangleAI()
+					diamonAI()
+					sphereAI()
+					playerMove()
+				}
 			}
 			
 			function cleanLevel() {
