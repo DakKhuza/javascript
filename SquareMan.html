@@ -6,10 +6,6 @@
 					margin: 0;
 					font-family: "Courier New", Courier, monospace;
 				}
-			div {
-					width: 960px;
-					margin: auto;
-				}
 		</style>
 	
 	
@@ -50,10 +46,10 @@
 			]
 			var playerY = 11
 			var playerX = 13
-			var playerDir = 0
+			var playerDir = 1
 			
-			var triX = 0
-			var triY = 0
+			var triX = 12
+			var triY = 20
 			
 			
 			var score = 0
@@ -92,9 +88,9 @@
 			function colCheck_actions() {
 				switch(level[playerY].charAt(playerX)) {
 					case "*":
-						level[playerY] = replaceStringAtPoint(level[playerY],playerX," ")
+						level[playerY] = replaceStringAtPoint(getStringContentOfLevelRow(playerY),playerX," ")
 						score++;
-						updateString("Score: "+score,document.getElementById('score'))
+						updateString("SCORE: "+score,document.getElementById('score'))
 					break;
 					
 					case "□":
@@ -108,14 +104,52 @@
 					case " ":
 					break;
 					
+					case "■":
+					break;
+					
 					default:
 						gameOver = true
 					break;
 				}
 			}
 			
+			function ai_getPossibleDir(ai_curX,ai_curY) {
+				possibleDirs = '0,0,0,0'
+				if (ai_checkPosFree(ai_curX-1,ai_curY)) {
+					replaceStringAtPoint(possibleDirs,0,'1')
+				}
+				
+				if (ai_checkPosFree(ai_curX+1,ai_curY)) {
+					replaceStringAtPoint(possibleDirs,2,'1')
+				}
+				
+				if (ai_checkPosFree(ai_curX,ai_curY-1)) {
+					replaceStringAtPoint(possibleDirs,4,'1')
+				}
+				
+				if (ai_checkPosFree(ai_curX,ai_curY+1)) {
+					replaceStringAtPoint(possibleDirs,6,'1')
+				}
+				return possibleDirs
+			}
+			
+			function ai_checkPosFree(ai_curX,ai_curY) {
+				switch (level[ai_curY].charAt(ai_curX)) {
+					case "*":
+					return true;
+					case "■":
+					return true;
+					case " ":
+					return true;
+					default:
+					return false;
+				}
+			}
+			
 			function triangleAI() {
 				
+				replaceString = replaceStringAtPoint(getStringContentOfLevelRow(triY),triX,"▲")
+				updateString(replaceString,document.getElementById('uuid-'+triY))
 			}
 			
 			function diamonAI() {
@@ -123,6 +157,17 @@
 			}
 			
 			function squareAI() {
+				
+			}
+			
+			function getStringContentOfLevelRow(row) {
+				actId = document.getElementById('uuid-'+row)
+				
+				for(let i = 0; i < actId.childNodes.length; i++){
+					if(actId.childNodes[i].nodeType == 3){
+						return actId.childNodes[i].nodeValue
+					}
+				}
 				
 			}
 			
@@ -164,24 +209,23 @@
 			
 			
 			function mainLoop() {
+				cleanLevel()
+				triangleAI()
 				playerMove()
-				if (gameOver == false) {
-					var replaceString = replaceStringAtPoint(level[playerY],playerX,"■")
-					updateString(replaceString)
-					colCheck_actions()
-				}else {
-					updateString("GAME OVER",document.getElementById('score'))
-				}
 			}
 			
-			
+			function cleanLevel() {
+				for (i=0;i < level.length;i++) {
+					updateString(level[i],document.getElementById('uuid-'+i))
+				}
+			}
 			function playerMove() {
 				switch (playerDir) {
 					
 					case 0:
 						if (colCheck(level[playerY-1].charAt(playerX))) {
 							if (playerY > 0) {
-								updateString(replaceStringAtPoint(level[playerY],playerX,null))
+								//updateString(replaceStringAtPoint(level[playerY],playerX,null))
 								playerY--
 							}
 						}
@@ -190,7 +234,7 @@
 					case 1:
 						if (colCheck(level[playerY+1].charAt(playerX))) {
 							if (playerY < level.length) {
-								updateString(replaceStringAtPoint(level[playerY],playerX,null))
+								//updateString(replaceStringAtPoint(level[playerY],playerX,null))
 								playerY++
 							}
 						}
@@ -215,6 +259,13 @@
 						console.log("No match")
 					break
 				}
+				if (gameOver == false) {
+					var replaceString = replaceStringAtPoint(getStringContentOfLevelRow(playerY),playerX,"■")
+					updateString(replaceString)
+					colCheck_actions()
+				}else {
+					updateString("GAME OVER",document.getElementById('score'))
+				}
 			}
 			
 			function updateString(str,updateElement) {
@@ -237,10 +288,13 @@
 			function init() {
 				var main = document.createElement('div')
 				var sub = document.createElement('div')
-				
+				x = 1
+				if ('1'+(x-x) == 10) {
+					console.log('fuckin javascript')
+				}
 				var scoreClock = document.createElement('p')
 				scoreClock.id = 'score'
-				var scoreText = document.createTextNode('Score: '+score)
+				var scoreText = document.createTextNode('SCORE: '+score)
 				
 				scoreClock.appendChild(scoreText)
 				sub.appendChild(scoreClock)
@@ -253,7 +307,6 @@
 					main.appendChild(head);
 					document.body.appendChild(main);
 				}
-				
 				document.body.appendChild(sub)
 				setInterval(mainLoop,220)
 			}
@@ -261,7 +314,6 @@
 			onkeydown=move
 		</script>
 	</head>
-	
 	<body>
 	</body>
 </html>
